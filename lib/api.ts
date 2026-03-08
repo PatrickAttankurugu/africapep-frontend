@@ -1,4 +1,12 @@
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://api-pep.patrickaiafrica.com";
+const API_KEY = process.env.NEXT_PUBLIC_API_KEY || "";
+
+function getHeaders(json = false): Record<string, string> {
+  const headers: Record<string, string> = {};
+  if (json) headers["Content-Type"] = "application/json";
+  if (API_KEY) headers["X-API-Key"] = API_KEY;
+  return headers;
+}
 
 export interface Position {
   title: string;
@@ -89,7 +97,7 @@ export async function screenName(
 
   const res = await fetch(`${API_BASE}/api/v1/screen`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: getHeaders(true),
     body: JSON.stringify(body),
   });
   if (!res.ok) throw new Error(`Screening failed: ${res.status}`);
@@ -109,19 +117,19 @@ export async function searchPeps(
   if (tier) params.set("tier", String(tier));
   if (active !== undefined) params.set("active", String(active));
 
-  const res = await fetch(`${API_BASE}/api/v1/search?${params}`);
+  const res = await fetch(`${API_BASE}/api/v1/search?${params}`, { headers: getHeaders() });
   if (!res.ok) throw new Error(`Search failed: ${res.status}`);
   return res.json();
 }
 
 export async function getStats(): Promise<StatsResponse> {
-  const res = await fetch(`${API_BASE}/api/v1/stats`);
+  const res = await fetch(`${API_BASE}/api/v1/stats`, { headers: getHeaders() });
   if (!res.ok) throw new Error(`Stats failed: ${res.status}`);
   return res.json();
 }
 
 export async function getHealth(): Promise<HealthResponse> {
-  const res = await fetch(`${API_BASE}/health`);
+  const res = await fetch(`${API_BASE}/health`, { headers: getHeaders() });
   if (!res.ok) throw new Error(`Health check failed: ${res.status}`);
   return res.json();
 }
@@ -133,6 +141,7 @@ export interface BatchNameEntry {
 
 export interface BatchResultItem {
   query_name: string;
+  match_count: number;
   matches: ScreenMatch[];
 }
 
@@ -151,7 +160,7 @@ export async function batchScreen(
   const body: Record<string, unknown> = { names, threshold: threshold || 0.65 };
   const res = await fetch(`${API_BASE}/api/v1/screen/batch`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: getHeaders(true),
     body: JSON.stringify(body),
   });
   if (!res.ok) throw new Error(`Batch screening failed: ${res.status}`);
@@ -171,7 +180,7 @@ export interface CountriesResponse {
 }
 
 export async function getCountries(): Promise<CountriesResponse> {
-  const res = await fetch(`${API_BASE}/api/v1/countries`);
+  const res = await fetch(`${API_BASE}/api/v1/countries`, { headers: getHeaders() });
   if (!res.ok) throw new Error(`Countries failed: ${res.status}`);
   return res.json();
 }
@@ -208,4 +217,63 @@ export function tierColor(tier: number): string {
     case 3: return "bg-blue-100 text-blue-800 border-blue-200";
     default: return "bg-gray-100 text-gray-800 border-gray-200";
   }
+}
+
+/* ── PEP Profile ── */
+
+export interface Source {
+  url: string;
+  title: string;
+  retrieved_at: string | null;
+}
+
+export interface PepProfile {
+  id: string;
+  full_name: string;
+  aliases: string[];
+  nationality: string;
+  date_of_birth: string | null;
+  pep_tier: number;
+  risk_level: string;
+  is_active: boolean;
+  positions: Position[];
+  sources: Source[];
+  datasets: string[];
+  first_seen: string | null;
+  last_seen: string | null;
+}
+
+export async function getPepProfile(id: string): Promise<PepProfile> {
+  const res = await fetch(`${API_BASE}/api/v1/pep/${encodeURIComponent(id)}`, {
+    headers: getHeaders(),
+  });
+  if (!res.ok) throw new Error(`Failed to load PEP profile: ${res.status}`);
+  return res.json();
+}
+
+/* ── PEP Relationship Graph ── */
+
+export interface GraphNode {
+  id: string;
+  label: string;
+  type: string;
+}
+
+export interface GraphEdge {
+  source: string;
+  target: string;
+  label: string;
+}
+
+export interface PepGraph {
+  nodes: GraphNode[];
+  edges: GraphEdge[];
+}
+
+export async function getPepGraph(id: string): Promise<PepGraph> {
+  const res = await fetch(`${API_BASE}/api/v1/pep/${encodeURIComponent(id)}/graph`, {
+    headers: getHeaders(),
+  });
+  if (!res.ok) throw new Error(`Failed to load relationship graph: ${res.status}`);
+  return res.json();
 }

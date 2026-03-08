@@ -26,8 +26,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <a href="/" className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
                   Screen
                 </a>
+                <a href="/batch" className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                  Batch
+                </a>
                 <a href="/search" className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
                   Search
+                </a>
+                <a href="/countries" className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
+                  Countries
                 </a>
                 <a href="/stats" className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition">
                   Dashboard
