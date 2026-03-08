@@ -20,13 +20,32 @@ export default function StatsPage() {
 
   if (loading) {
     return (
-      <div className="max-w-5xl mx-auto px-4 py-12 text-center text-gray-500">Loading dashboard...</div>
+      <div className="max-w-5xl mx-auto px-4 py-12">
+        <h1 className="text-3xl font-bold text-gray-900 mb-8">Database Dashboard</h1>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[1,2,3,4].map(i => (
+            <div key={i} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <div className="animate-pulse space-y-2">
+                <div className="h-4 w-20 bg-gray-200 rounded" />
+                <div className="h-8 w-16 bg-gray-200 rounded" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     );
   }
 
   if (!stats) {
     return (
-      <div className="max-w-5xl mx-auto px-4 py-12 text-center text-red-500">Failed to load stats</div>
+      <div className="max-w-5xl mx-auto px-4 py-12 text-center">
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+          Failed to load dashboard data. The API may be temporarily unavailable.
+          <button onClick={() => window.location.reload()} className="ml-3 px-3 py-1 bg-red-100 hover:bg-red-200 rounded-md text-sm transition">
+            Retry
+          </button>
+        </div>
+      </div>
     );
   }
 

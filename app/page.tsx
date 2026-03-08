@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { screenName, getStats, AFRICAN_COUNTRIES, tierColor, type ScreenMatch } from "@/lib/api";
+import { exportMatchesToCSV } from "@/lib/export";
 
 export default function ScreenPage() {
   const [name, setName] = useState("");
@@ -125,9 +127,19 @@ export default function ScreenPage() {
                 ? "No matches found"
                 : `${matches.length} match${matches.length === 1 ? "" : "es"} found`}
             </h2>
-            {screeningId && (
-              <span className="text-xs text-gray-400 font-mono">ID: {screeningId.slice(0, 8)}</span>
-            )}
+            <div className="flex items-center gap-3">
+              {matches.length > 0 && (
+                <button
+                  onClick={() => exportMatchesToCSV(matches)}
+                  className="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md transition"
+                >
+                  Download CSV
+                </button>
+              )}
+              {screeningId && (
+                <span className="text-xs text-gray-400 font-mono">ID: {screeningId.slice(0, 8)}</span>
+              )}
+            </div>
           </div>
 
           {matches.length === 0 && (
@@ -187,6 +199,12 @@ export default function ScreenPage() {
                     {match.is_active ? "ACTIVE PEP" : "Inactive"}
                   </span>
                   <span>ID: {match.pep_id.slice(0, 8)}</span>
+                  <Link
+                    href={`/pep/${match.pep_id}`}
+                    className="text-emerald-600 hover:underline ml-auto"
+                  >
+                    View Profile &rarr;
+                  </Link>
                 </div>
               </div>
             ))}

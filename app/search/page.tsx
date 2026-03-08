@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { searchPeps, AFRICAN_COUNTRIES, tierColor, type SearchResult } from "@/lib/api";
 
 export default function SearchPage() {
@@ -12,11 +13,13 @@ export default function SearchPage() {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
+  const [error, setError] = useState("");
 
   async function handleSearch(e?: React.FormEvent, p = 1) {
     if (e) e.preventDefault();
     if (!query.trim()) return;
     setLoading(true);
+    setError("");
     try {
       const res = await searchPeps(
         query.trim(),
@@ -30,8 +33,8 @@ export default function SearchPage() {
       setTotal(res.total);
       setPage(p);
       setSearched(true);
-    } catch {
-      /* ignore */
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Search failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -92,6 +95,10 @@ export default function SearchPage() {
         </div>
       </form>
 
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">{error}</div>
+      )}
+
       {searched && (
         <>
           <p className="text-sm text-gray-500 mb-4">
@@ -112,7 +119,11 @@ export default function SearchPage() {
               <tbody className="divide-y divide-gray-100">
                 {results.map((r) => (
                   <tr key={r.id} className="hover:bg-gray-50 transition">
-                    <td className="px-4 py-3 font-medium text-gray-900">{r.full_name}</td>
+                    <td className="px-4 py-3 font-medium text-gray-900">
+                      <Link href={`/pep/${r.id}`} className="hover:text-emerald-600 hover:underline transition">
+                        {r.full_name}
+                      </Link>
+                    </td>
                     <td className="px-4 py-3 text-gray-600">
                       {AFRICAN_COUNTRIES[r.nationality] || r.nationality}
                     </td>

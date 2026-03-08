@@ -14,19 +14,41 @@ const REGION_COLORS: Record<string, string> = {
 export default function CountriesPage() {
   const [countries, setCountries] = useState<CountryInfo[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [filterRegion, setFilterRegion] = useState("");
   const [sortBy, setSortBy] = useState<"name" | "peps">("peps");
 
   useEffect(() => {
     getCountries()
       .then((res) => setCountries(res.countries))
-      .catch(() => {})
+      .catch((err) => setError(err instanceof Error ? err.message : "Failed to load countries"))
       .finally(() => setLoading(false));
   }, []);
 
   if (loading) {
     return (
-      <div className="max-w-6xl mx-auto px-4 py-12 text-center text-gray-500">Loading countries...</div>
+      <div className="max-w-6xl mx-auto px-4 py-12">
+        <h1 className="text-3xl font-bold text-gray-900 mb-8">Country Coverage</h1>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+          {[1,2,3,4,5].map(i => (
+            <div key={i} className="bg-white rounded-xl border border-gray-200 p-4 animate-pulse">
+              <div className="h-4 w-20 bg-gray-200 rounded mb-2" />
+              <div className="h-8 w-12 bg-gray-200 rounded" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-6xl mx-auto px-4 py-12 text-center">
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+          {error}
+          <button onClick={() => window.location.reload()} className="ml-3 px-3 py-1 bg-red-100 hover:bg-red-200 rounded-md text-sm transition">Retry</button>
+        </div>
+      </div>
     );
   }
 
