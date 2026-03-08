@@ -1,4 +1,4 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://api-pep.patrickaiafrica.com";
 
 export interface Position {
   title: string;
@@ -10,19 +10,36 @@ export interface Position {
   is_current: boolean;
 }
 
+export interface MatchExplanation {
+  name_similarity: number;
+  best_variant_score: number;
+  method: string;
+  matched_variant: string | null;
+}
+
 export interface ScreenMatch {
   pep_id: string;
   matched_name: string;
   match_score: number;
+  match: boolean;
   pep_tier: number;
+  risk_level: string;
   is_active: boolean;
-  positions: Position[];
   nationality: string;
+  date_of_birth: string | null;
+  aliases: string[];
+  positions: Position[];
   sources: unknown[];
+  datasets: string[];
+  first_seen: string | null;
+  last_seen: string | null;
+  explanation: MatchExplanation | null;
 }
 
 export interface ScreeningResponse {
   query: string;
+  threshold: number;
+  total_matches: number;
   matches: ScreenMatch[];
   screening_id: string;
   screened_at: string;
@@ -32,6 +49,7 @@ export interface SearchResult {
   id: string;
   full_name: string;
   pep_tier: number;
+  risk_level: string;
   is_active: boolean;
   nationality: string;
   positions: Position[];
@@ -105,6 +123,56 @@ export async function getStats(): Promise<StatsResponse> {
 export async function getHealth(): Promise<HealthResponse> {
   const res = await fetch(`${API_BASE}/health`);
   if (!res.ok) throw new Error(`Health check failed: ${res.status}`);
+  return res.json();
+}
+
+export interface BatchNameEntry {
+  name: string;
+  country?: string;
+}
+
+export interface BatchResultItem {
+  query_name: string;
+  matches: ScreenMatch[];
+}
+
+export interface BatchScreeningResponse {
+  results: BatchResultItem[];
+  total_queries: number;
+  total_matches: number;
+  screening_id: string;
+  screened_at: string;
+}
+
+export async function batchScreen(
+  names: BatchNameEntry[],
+  threshold?: number
+): Promise<BatchScreeningResponse> {
+  const body: Record<string, unknown> = { names, threshold: threshold || 0.65 };
+  const res = await fetch(`${API_BASE}/api/v1/screen/batch`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`Batch screening failed: ${res.status}`);
+  return res.json();
+}
+
+export interface CountryInfo {
+  code: string;
+  name: string;
+  region: string;
+  pep_count: number;
+}
+
+export interface CountriesResponse {
+  total_countries: number;
+  countries: CountryInfo[];
+}
+
+export async function getCountries(): Promise<CountriesResponse> {
+  const res = await fetch(`${API_BASE}/api/v1/countries`);
+  if (!res.ok) throw new Error(`Countries failed: ${res.status}`);
   return res.json();
 }
 

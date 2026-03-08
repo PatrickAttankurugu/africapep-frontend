@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { screenName, AFRICAN_COUNTRIES, tierColor, type ScreenMatch } from "@/lib/api";
+import { useState, useEffect } from "react";
+import { screenName, getStats, AFRICAN_COUNTRIES, tierColor, type ScreenMatch } from "@/lib/api";
 
 export default function ScreenPage() {
   const [name, setName] = useState("");
@@ -12,6 +12,17 @@ export default function ScreenPage() {
   const [searched, setSearched] = useState(false);
   const [screeningId, setScreeningId] = useState("");
   const [error, setError] = useState("");
+  const [totalPeps, setTotalPeps] = useState<number | null>(null);
+  const [countryCount, setCountryCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    getStats()
+      .then((s) => {
+        setTotalPeps(s.total_peps);
+        setCountryCount(Object.keys(s.by_country).length);
+      })
+      .catch(() => {});
+  }, []);
 
   async function handleScreen(e: React.FormEvent) {
     e.preventDefault();
@@ -38,8 +49,8 @@ export default function ScreenPage() {
           PEP Screening for Africa
         </h1>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          Screen any name against <strong>775+ Politically Exposed Persons</strong> across
-          all <strong>54 African countries</strong>. Powered by fuzzy matching and graph-based
+          Screen any name against <strong>{totalPeps ? `${totalPeps.toLocaleString()}+` : "..."} Politically Exposed Persons</strong> across
+          all <strong>{countryCount || 54} African countries</strong>. Powered by fuzzy matching and graph-based
           relationship detection.
         </p>
       </div>
@@ -54,6 +65,7 @@ export default function ScreenPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Bola Tinubu"
+              maxLength={200}
               className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition"
               required
             />
@@ -187,7 +199,7 @@ export default function ScreenPage() {
         <div className="text-center text-sm text-gray-500">
           <p className="mb-2">Try screening these names:</p>
           <div className="flex flex-wrap gap-2 justify-center">
-            {["Cyril Ramaphosa", "William Ruto", "Paul Biya", "Nana Akufo-Addo", "Bola Tinubu"].map(
+            {["Bola Tinubu", "John Mahama", "William Ruto", "Cyril Ramaphosa", "Paul Kagame", "Goodluck Jonathan", "Peter Obi"].map(
               (n) => (
                 <button
                   key={n}
