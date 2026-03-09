@@ -128,12 +128,12 @@ export default function PepDetailPage({
           </span>
           <span
             className={`px-3 py-1 rounded-full text-xs font-semibold border ${
-              profile.is_active
+              profile.is_active_pep
                 ? "bg-red-50 text-red-700 border-red-200"
                 : "bg-gray-100 text-gray-500 border-gray-200"
             }`}
           >
-            {profile.is_active ? "Active PEP" : "Inactive"}
+            {profile.is_active_pep ? "Active PEP" : "Inactive"}
           </span>
         </div>
       </div>

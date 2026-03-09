@@ -235,7 +235,7 @@ export interface PepProfile {
   date_of_birth: string | null;
   pep_tier: number;
   risk_level: string;
-  is_active: boolean;
+  is_active_pep: boolean;
   positions: Position[];
   sources: Source[];
   datasets: string[];
