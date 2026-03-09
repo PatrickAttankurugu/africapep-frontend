@@ -194,6 +194,41 @@ export default function ScreenPage() {
                   </div>
                 )}
 
+                {/* Scoring Breakdown */}
+                {match.explanation && (
+                  <div className="mt-3 bg-gray-50 rounded-lg p-3 border border-gray-100">
+                    <p className="text-xs font-medium text-gray-600 mb-2">Match Scoring</p>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                      <div>
+                        <span className="text-gray-400 block">Name Similarity</span>
+                        <span className="font-semibold text-gray-800">
+                          {Math.round(match.explanation.name_similarity * 100)}%
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-gray-400 block">Best Variant Score</span>
+                        <span className="font-semibold text-gray-800">
+                          {Math.round(match.explanation.best_variant_score * 100)}%
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-gray-400 block">Method</span>
+                        <span className="font-semibold text-gray-800">
+                          {match.explanation.method.replace(/_/g, " ")}
+                        </span>
+                      </div>
+                      {match.explanation.matched_variant && (
+                        <div>
+                          <span className="text-gray-400 block">Matched Via</span>
+                          <span className="font-semibold text-gray-800">
+                            {match.explanation.matched_variant}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
                 <div className="mt-3 flex items-center gap-4 text-xs text-gray-500">
                   <span className={match.is_active ? "text-red-600 font-medium" : "text-gray-400"}>
                     {match.is_active ? "ACTIVE PEP" : "Inactive"}
