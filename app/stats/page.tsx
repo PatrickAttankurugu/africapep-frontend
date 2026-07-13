@@ -3,6 +3,15 @@
 import { useEffect, useState } from "react";
 import { getStats, getHealth, AFRICAN_COUNTRIES, type StatsResponse, type HealthResponse } from "@/lib/api";
 
+function relativeTime(iso: string): string {
+  const ms = Date.now() - new Date(iso).getTime();
+  const hours = Math.floor(ms / 3_600_000);
+  if (hours < 1) return "less than an hour ago";
+  if (hours < 48) return `${hours} hour${hours === 1 ? "" : "s"} ago`;
+  const days = Math.floor(hours / 24);
+  return `${days} days ago`;
+}
+
 export default function StatsPage() {
   const [stats, setStats] = useState<StatsResponse | null>(null);
   const [health, setHealth] = useState<HealthResponse | null>(null);
@@ -56,7 +65,19 @@ export default function StatsPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-12">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Database Dashboard</h1>
+      <h1 className="text-3xl font-bold text-gray-900 mb-2">Database Dashboard</h1>
+      {stats.last_updated && (
+        <p className="text-sm text-gray-500 mb-8">
+          <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 mr-1.5 align-middle" />
+          Data last updated {relativeTime(stats.last_updated)}
+          <span
+            className="text-gray-400 ml-1"
+            title={new Date(stats.last_updated).toLocaleString()}
+          >
+            ({new Date(stats.last_updated).toLocaleDateString()})
+          </span>
+        </p>
+      )}
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">

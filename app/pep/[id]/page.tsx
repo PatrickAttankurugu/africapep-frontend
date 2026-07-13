@@ -5,19 +5,24 @@ import Link from "next/link";
 import {
   getPepProfile,
   getPepGraph,
+  edgeLabel,
   tierLabel,
   tierColor,
   AFRICAN_COUNTRIES,
   type PepProfile,
   type PepGraph,
 } from "@/lib/api";
+import GraphView from "@/components/GraphView";
 
 export default function PepDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = use(params);
+  // Next delivers the path segment percent-encoded (wd%3AQ50678); decode it
+  // once so API calls don't double-encode and 404.
+  const { id: rawId } = use(params);
+  const id = decodeURIComponent(rawId);
 
   const [profile, setProfile] = useState<PepProfile | null>(null);
   const [graph, setGraph] = useState<PepGraph | null>(null);
@@ -311,12 +316,15 @@ export default function PepDetailPage({
       {graph && (graph.nodes.length > 1 || graph.edges.length > 0) && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            Relationships
+            Relationship Network
           </h2>
+
+          {/* Interactive network graph */}
+          <GraphView graph={graph} centerId={id} />
 
           {/* Edges as a list */}
           {graph.edges.length > 0 ? (
-            <div className="space-y-3">
+            <div className="space-y-3 mt-6">
               {graph.edges.map((edge, i) => {
                 const sourceNode = graph.nodes.find(
                   (n) => n.id === edge.source
@@ -333,7 +341,7 @@ export default function PepDetailPage({
                       {sourceNode?.label || edge.source}
                     </span>
                     <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded text-xs font-medium">
-                      {edge.label}
+                      {edgeLabel(edge)}
                     </span>
                     <span className="font-medium text-gray-900">
                       {targetNode?.label || edge.target}

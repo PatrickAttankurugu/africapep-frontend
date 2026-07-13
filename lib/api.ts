@@ -257,12 +257,28 @@ export interface GraphNode {
   id: string;
   label: string;
   type: string;
+  properties?: Record<string, unknown>;
 }
 
 export interface GraphEdge {
   source: string;
   target: string;
-  label: string;
+  // Backend emits `type` (HELD_POSITION, FAMILY_OF, ...) plus optional
+  // properties.relationship_type (SPOUSE, CHILD, ...)
+  type: string;
+  properties?: Record<string, unknown>;
+}
+
+export function edgeLabel(e: GraphEdge): string {
+  const rel = e.properties?.relationship_type;
+  if (typeof rel === "string" && rel) return rel.toLowerCase();
+  const names: Record<string, string> = {
+    HELD_POSITION: "held position",
+    FAMILY_OF: "family",
+    ASSOCIATED_WITH: "associate",
+    CITIZEN_OF: "citizen of",
+  };
+  return names[e.type] || e.type.toLowerCase();
 }
 
 export interface PepGraph {
