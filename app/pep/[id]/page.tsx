@@ -264,34 +264,50 @@ export default function PepDetailPage({
         </div>
       )}
 
-      {/* Sources */}
-      {profile.sources.length > 0 && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Sources</h2>
-          <ul className="space-y-3">
-            {profile.sources.map((src, i) => (
-              <li key={i} className="flex items-start gap-2 text-sm">
-                <span className="text-gray-400 mt-0.5">&#9679;</span>
-                <div>
-                  <a
-                    href={src.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-emerald-600 hover:text-emerald-700 underline underline-offset-2"
-                  >
-                    {src.title || src.url}
-                  </a>
-                  {src.retrieved_at && (
-                    <span className="text-gray-400 ml-2 text-xs">
-                      Retrieved {src.retrieved_at}
-                    </span>
-                  )}
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      {/* Sources — de-duplicated; entries without a URL render as plain text */}
+      {profile.sources.length > 0 && (() => {
+        const seen = new Set<string>();
+        const sources = profile.sources.filter((src) => {
+          const key = src.source_url || src.source_type;
+          if (!key || seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+        if (sources.length === 0) return null;
+        return (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Sources</h2>
+            <ul className="space-y-3">
+              {sources.map((src, i) => (
+                <li key={i} className="flex items-start gap-2 text-sm">
+                  <span className="text-gray-400 mt-0.5">&#9679;</span>
+                  <div>
+                    {src.source_url ? (
+                      <a
+                        href={src.source_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-emerald-600 hover:text-emerald-700 underline underline-offset-2"
+                      >
+                        {src.source_url}
+                      </a>
+                    ) : (
+                      <span className="text-gray-700 font-medium">
+                        {src.source_type}
+                      </span>
+                    )}
+                    {src.scraped_at && (
+                      <span className="text-gray-400 ml-2 text-xs">
+                        Retrieved {src.scraped_at.slice(0, 10)}
+                      </span>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
+      })()}
 
       {/* Datasets */}
       {profile.datasets.length > 0 && (

@@ -221,10 +221,12 @@ export function tierColor(tier: number): string {
 
 /* ── PEP Profile ── */
 
+// Field names match the API's SourceResponse schema
 export interface Source {
-  url: string;
-  title: string;
-  retrieved_at: string | null;
+  source_url: string;
+  source_type: string;
+  country: string;
+  scraped_at: string | null;
 }
 
 export interface PepProfile {
