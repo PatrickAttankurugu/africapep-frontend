@@ -8,6 +8,39 @@ function getHeaders(json = false): Record<string, string> {
   return headers;
 }
 
+export class ApiError extends Error {
+  status: number;
+  code: string;
+
+  constructor(status: number, detail: string, code = "") {
+    super(detail);
+    this.status = status;
+    this.code = code;
+  }
+}
+
+/* The API returns structured errors as {"detail": "...", "code": "..."}.
+   Surface those instead of a bare status code, with a friendly message for
+   rate limiting (60/min screen, 20/min batch). */
+async function apiFetch<T>(path: string, init?: RequestInit, fallback = "Request failed"): Promise<T> {
+  const res = await fetch(`${API_BASE}${path}`, init);
+  if (res.ok) return res.json();
+
+  let detail = "";
+  let code = "";
+  try {
+    const body = await res.json();
+    detail = typeof body?.detail === "string" ? body.detail : "";
+    code = typeof body?.code === "string" ? body.code : "";
+  } catch {
+    /* non-JSON error body */
+  }
+  if (res.status === 429) {
+    detail = "You are screening faster than the free API allows. Wait a moment and try again.";
+  }
+  throw new ApiError(res.status, detail || `${fallback} (${res.status})`, code);
+}
+
 export interface Position {
   title: string;
   institution: string;
@@ -95,13 +128,11 @@ export async function screenName(
   const body: Record<string, unknown> = { name, threshold: threshold || 0.65 };
   if (country) body.country = country;
 
-  const res = await fetch(`${API_BASE}/api/v1/screen`, {
+  return apiFetch(`/api/v1/screen`, {
     method: "POST",
     headers: getHeaders(true),
     body: JSON.stringify(body),
-  });
-  if (!res.ok) throw new Error(`Screening failed: ${res.status}`);
-  return res.json();
+  }, "Screening failed");
 }
 
 export async function searchPeps(
@@ -117,21 +148,15 @@ export async function searchPeps(
   if (tier) params.set("tier", String(tier));
   if (active !== undefined) params.set("active", String(active));
 
-  const res = await fetch(`${API_BASE}/api/v1/search?${params}`, { headers: getHeaders() });
-  if (!res.ok) throw new Error(`Search failed: ${res.status}`);
-  return res.json();
+  return apiFetch(`/api/v1/search?${params}`, { headers: getHeaders() }, "Search failed");
 }
 
 export async function getStats(): Promise<StatsResponse> {
-  const res = await fetch(`${API_BASE}/api/v1/stats`, { headers: getHeaders() });
-  if (!res.ok) throw new Error(`Stats failed: ${res.status}`);
-  return res.json();
+  return apiFetch(`/api/v1/stats`, { headers: getHeaders() }, "Stats failed");
 }
 
 export async function getHealth(): Promise<HealthResponse> {
-  const res = await fetch(`${API_BASE}/health`, { headers: getHeaders() });
-  if (!res.ok) throw new Error(`Health check failed: ${res.status}`);
-  return res.json();
+  return apiFetch(`/health`, { headers: getHeaders() }, "Health check failed");
 }
 
 export interface BatchNameEntry {
@@ -158,13 +183,11 @@ export async function batchScreen(
   threshold?: number
 ): Promise<BatchScreeningResponse> {
   const body: Record<string, unknown> = { names, threshold: threshold || 0.65 };
-  const res = await fetch(`${API_BASE}/api/v1/screen/batch`, {
+  return apiFetch(`/api/v1/screen/batch`, {
     method: "POST",
     headers: getHeaders(true),
     body: JSON.stringify(body),
-  });
-  if (!res.ok) throw new Error(`Batch screening failed: ${res.status}`);
-  return res.json();
+  }, "Batch screening failed");
 }
 
 export interface CountryInfo {
@@ -180,9 +203,7 @@ export interface CountriesResponse {
 }
 
 export async function getCountries(): Promise<CountriesResponse> {
-  const res = await fetch(`${API_BASE}/api/v1/countries`, { headers: getHeaders() });
-  if (!res.ok) throw new Error(`Countries failed: ${res.status}`);
-  return res.json();
+  return apiFetch(`/api/v1/countries`, { headers: getHeaders() }, "Countries failed");
 }
 
 export const AFRICAN_COUNTRIES: Record<string, string> = {
@@ -246,11 +267,9 @@ export interface PepProfile {
 }
 
 export async function getPepProfile(id: string): Promise<PepProfile> {
-  const res = await fetch(`${API_BASE}/api/v1/pep/${encodeURIComponent(id)}`, {
+  return apiFetch(`/api/v1/pep/${encodeURIComponent(id)}`, {
     headers: getHeaders(),
-  });
-  if (!res.ok) throw new Error(`Failed to load PEP profile: ${res.status}`);
-  return res.json();
+  }, "Failed to load PEP profile");
 }
 
 /* ── PEP Relationship Graph ── */
@@ -289,9 +308,7 @@ export interface PepGraph {
 }
 
 export async function getPepGraph(id: string): Promise<PepGraph> {
-  const res = await fetch(`${API_BASE}/api/v1/pep/${encodeURIComponent(id)}/graph`, {
+  return apiFetch(`/api/v1/pep/${encodeURIComponent(id)}/graph`, {
     headers: getHeaders(),
-  });
-  if (!res.ok) throw new Error(`Failed to load relationship graph: ${res.status}`);
-  return res.json();
+  }, "Failed to load relationship graph");
 }

@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { batchScreen, AFRICAN_COUNTRIES, tierColor, type BatchResultItem } from "@/lib/api";
+import { exportBatchToCSV } from "@/lib/export";
 
 export default function BatchPage() {
   const [text, setText] = useState("");
@@ -124,9 +126,17 @@ export default function BatchPage() {
             </div>
           </div>
 
-          {screeningId && (
-            <p className="text-xs text-gray-400 mb-4 font-mono">Screening ID: {screeningId.slice(0, 8)} | {totalMatches} total matches</p>
-          )}
+          <div className="flex items-center justify-between mb-4">
+            {screeningId && (
+              <p className="text-xs text-gray-400 font-mono">Screening ID: {screeningId.slice(0, 8)} | {totalMatches} total matches</p>
+            )}
+            <button
+              onClick={() => exportBatchToCSV(results, screeningId)}
+              className="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md transition"
+            >
+              Download CSV (all {results.length} names)
+            </button>
+          </div>
 
           {/* Flagged results */}
           {flagged.length > 0 && (
@@ -145,10 +155,18 @@ export default function BatchPage() {
                       {item.matches.map((match) => (
                         <div key={match.pep_id} className="flex items-center justify-between text-sm bg-gray-50 rounded-lg px-3 py-2">
                           <div>
-                            <span className="font-medium text-gray-800">{match.matched_name}</span>
+                            <Link
+                              href={`/pep/${encodeURIComponent(match.pep_id)}`}
+                              className="font-medium text-gray-800 hover:text-emerald-600 hover:underline"
+                            >
+                              {match.matched_name}
+                            </Link>
                             <span className="text-gray-500 ml-2">
                               {AFRICAN_COUNTRIES[match.nationality] || match.nationality}
                             </span>
+                            {match.date_of_birth && (
+                              <span className="text-gray-400 ml-2">b. {match.date_of_birth}</span>
+                            )}
                             {match.positions[0] && (
                               <span className="text-gray-400 ml-2">- {match.positions[0].title}</span>
                             )}

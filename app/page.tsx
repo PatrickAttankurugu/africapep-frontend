@@ -163,6 +163,9 @@ export default function ScreenPage() {
                     <h3 className="text-lg font-semibold text-gray-900">{match.matched_name}</h3>
                     <p className="text-sm text-gray-500">
                       {AFRICAN_COUNTRIES[match.nationality] || match.nationality}
+                      {match.date_of_birth && (
+                        <span className="text-gray-400"> &middot; born {match.date_of_birth}</span>
+                      )}
                     </p>
                   </div>
                   <div className="flex items-center gap-3">

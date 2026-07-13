@@ -3,12 +3,13 @@
 import { useEffect, useState } from "react";
 import { getCountries, type CountryInfo } from "@/lib/api";
 
+// Keys match the API's region values ("West", "East", ...), not "West Africa"
 const REGION_COLORS: Record<string, string> = {
-  "West Africa": "bg-amber-100 text-amber-800 border-amber-200",
-  "East Africa": "bg-emerald-100 text-emerald-800 border-emerald-200",
-  "Southern Africa": "bg-blue-100 text-blue-800 border-blue-200",
-  "Central Africa": "bg-purple-100 text-purple-800 border-purple-200",
-  "North Africa": "bg-red-100 text-red-800 border-red-200",
+  West: "bg-amber-100 text-amber-800 border-amber-200",
+  East: "bg-emerald-100 text-emerald-800 border-emerald-200",
+  Southern: "bg-blue-100 text-blue-800 border-blue-200",
+  Central: "bg-purple-100 text-purple-800 border-purple-200",
+  North: "bg-red-100 text-red-800 border-red-200",
 };
 
 export default function CountriesPage() {

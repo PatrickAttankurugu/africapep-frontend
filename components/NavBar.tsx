@@ -16,6 +16,12 @@ export default function NavBar() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
+  // Profile pages are reached from Search, so keep Search highlighted there
+  const isActive = (href: string) =>
+    href === "/"
+      ? pathname === "/"
+      : pathname.startsWith(href) || (href === "/search" && pathname.startsWith("/pep"));
+
   return (
     <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -36,7 +42,7 @@ export default function NavBar() {
                 key={href}
                 href={href}
                 className={`px-3 py-2 rounded-md text-sm font-medium transition ${
-                  pathname === href
+                  isActive(href)
                     ? "bg-emerald-50 text-emerald-700"
                     : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                 }`}
@@ -71,7 +77,7 @@ export default function NavBar() {
                 href={href}
                 onClick={() => setOpen(false)}
                 className={`block px-3 py-2 rounded-md text-sm font-medium transition ${
-                  pathname === href
+                  isActive(href)
                     ? "bg-emerald-50 text-emerald-700"
                     : "text-gray-700 hover:bg-gray-100"
                 }`}

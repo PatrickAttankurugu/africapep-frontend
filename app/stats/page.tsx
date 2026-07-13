@@ -94,7 +94,7 @@ export default function StatsPage() {
           <p className="text-3xl font-bold text-gray-900">{Object.keys(stats.by_country).length}</p>
         </div>
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <p className="text-sm text-gray-500 mb-1">Data Sources</p>
+          <p className="text-sm text-gray-500 mb-1">Source Records</p>
           <p className="text-3xl font-bold text-gray-900">{stats.sources_count.toLocaleString()}</p>
         </div>
       </div>

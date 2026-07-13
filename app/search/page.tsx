@@ -1,13 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { searchPeps, AFRICAN_COUNTRIES, tierColor, type SearchResult } from "@/lib/api";
 
-export default function SearchPage() {
-  const [query, setQuery] = useState("");
-  const [country, setCountry] = useState("");
-  const [tier, setTier] = useState<number | "">("");
+function SearchPageInner() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const [query, setQuery] = useState(searchParams.get("q") || "");
+  const [country, setCountry] = useState(searchParams.get("country") || "");
+  const [tier, setTier] = useState<number | "">(() => {
+    const t = Number(searchParams.get("tier"));
+    return t >= 1 && t <= 3 ? t : "";
+  });
   const [results, setResults] = useState<SearchResult[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -15,29 +22,44 @@ export default function SearchPage() {
   const [searched, setSearched] = useState(false);
   const [error, setError] = useState("");
 
-  async function handleSearch(e?: React.FormEvent, p = 1) {
-    if (e) e.preventDefault();
-    if (!query.trim()) return;
+  async function runSearch(q: string, c: string, t: number | "", p: number) {
     setLoading(true);
     setError("");
     try {
-      const res = await searchPeps(
-        query.trim(),
-        country || undefined,
-        tier ? Number(tier) : undefined,
-        undefined,
-        p,
-        20
-      );
+      const res = await searchPeps(q, c || undefined, t ? Number(t) : undefined, undefined, p, 20);
       setResults(res.results);
       setTotal(res.total);
       setPage(p);
       setSearched(true);
+
+      // Keep the URL shareable/bookmarkable
+      const params = new URLSearchParams({ q });
+      if (c) params.set("country", c);
+      if (t) params.set("tier", String(t));
+      if (p > 1) params.set("page", String(p));
+      router.replace(`/search?${params}`, { scroll: false });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Search failed. Please try again.");
     } finally {
       setLoading(false);
     }
+  }
+
+  // Deep link: /search?q=...&country=...&tier=...&page=... runs on arrival
+  useEffect(() => {
+    const q = searchParams.get("q");
+    if (q && !searched) {
+      const t = Number(searchParams.get("tier"));
+      const p = Math.max(1, Number(searchParams.get("page")) || 1);
+      runSearch(q, searchParams.get("country") || "", t >= 1 && t <= 3 ? t : "", p);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  async function handleSearch(e?: React.FormEvent, p = 1) {
+    if (e) e.preventDefault();
+    if (!query.trim()) return;
+    await runSearch(query.trim(), country, tier, p);
   }
 
   return (
@@ -175,5 +197,14 @@ export default function SearchPage() {
         </>
       )}
     </div>
+  );
+}
+
+export default function SearchPage() {
+  // useSearchParams requires a Suspense boundary in the App Router
+  return (
+    <Suspense fallback={<div className="max-w-5xl mx-auto px-4 py-12" />}>
+      <SearchPageInner />
+    </Suspense>
   );
 }

@@ -3,6 +3,7 @@ import "./globals.css";
 import NavBar from "@/components/NavBar";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://pep.patrickaiafrica.com"),
   title: "AfricaPEP — African PEP Screening",
   description:
     "Open-source Politically Exposed Persons database covering all 54 African countries. Screen names for KYC/AML compliance.",
@@ -14,14 +15,16 @@ export const metadata: Metadata = {
     siteName: "AfricaPEP",
     type: "website",
   },
+  twitter: {
+    card: "summary",
+    title: "AfricaPEP — African PEP Screening",
+    description: "Open-source PEP database covering all 54 African countries for KYC/AML compliance.",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <head>
-        <link rel="icon" href="/favicon.ico" sizes="any" />
-      </head>
       <body className="min-h-screen bg-gray-50 text-gray-900 antialiased">
         <NavBar />
         <main>{children}</main>
