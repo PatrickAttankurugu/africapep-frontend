@@ -1,4 +1,4 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://api-pep.patrickaiafrica.com";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://api-pep.102-37-18-200.sslip.io";
 const API_KEY = process.env.NEXT_PUBLIC_API_KEY || "";
 
 function getHeaders(json = false): Record<string, string> {

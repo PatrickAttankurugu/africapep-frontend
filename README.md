@@ -1,13 +1,13 @@
 # AfricaPEP Frontend
 
-[![Live Demo](https://img.shields.io/badge/demo-pep.patrickaiafrica.com-blue.svg)](https://pep.patrickaiafrica.com)
+[![Live Demo](https://img.shields.io/badge/demo-africapep--frontend.vercel.app-blue.svg)](https://africapep-frontend.vercel.app)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black.svg)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue.svg)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-38B2AC.svg)](https://tailwindcss.com/)
 
 The web frontend for [AfricaPEP](https://github.com/PatrickAttankurugu/AfricaPEP) — an open-source African Politically Exposed Persons database for KYC/AML compliance.
 
-**Live demo:** [pep.patrickaiafrica.com](https://pep.patrickaiafrica.com) | **Backend API:** [api-pep.patrickaiafrica.com](https://api-pep.patrickaiafrica.com/docs) | **Backend repo:** [AfricaPEP](https://github.com/PatrickAttankurugu/AfricaPEP)
+**Live demo:** [africapep-frontend.vercel.app](https://africapep-frontend.vercel.app) | **Backend API:** [api-pep.102-37-18-200.sslip.io](https://api-pep.102-37-18-200.sslip.io/docs) | **Backend repo:** [AfricaPEP](https://github.com/PatrickAttankurugu/AfricaPEP)
 
 ## Features
 
@@ -51,7 +51,7 @@ npm run dev
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `NEXT_PUBLIC_API_URL` | `https://api-pep.patrickaiafrica.com` | Backend API base URL |
+| `NEXT_PUBLIC_API_URL` | `https://api-pep.102-37-18-200.sslip.io` | Backend API base URL |
 | `NEXT_PUBLIC_API_KEY` | _(empty)_ | API key (required when backend has `API_KEY_ENABLED=true`) |
 
 ## Tech Stack
@@ -80,7 +80,7 @@ lib/
 ## Related
 
 - **Backend API:** [github.com/PatrickAttankurugu/AfricaPEP](https://github.com/PatrickAttankurugu/AfricaPEP)
-- **API Docs:** [api-pep.patrickaiafrica.com/docs](https://api-pep.patrickaiafrica.com/docs)
+- **API Docs:** [api-pep.102-37-18-200.sslip.io/docs](https://api-pep.102-37-18-200.sslip.io/docs)
 
 ## Author
 

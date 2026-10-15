@@ -3,7 +3,7 @@ import "./globals.css";
 import NavBar from "@/components/NavBar";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://pep.patrickaiafrica.com"),
+  metadataBase: new URL("https://africapep-frontend.vercel.app"),
   title: "AfricaPEP — African PEP Screening",
   description:
     "Open-source Politically Exposed Persons database covering all 54 African countries. Screen names for KYC/AML compliance.",
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "AfricaPEP — African PEP Screening",
     description: "Open-source PEP database covering all 54 African countries for KYC/AML compliance.",
-    url: "https://pep.patrickaiafrica.com",
+    url: "https://africapep-frontend.vercel.app",
     siteName: "AfricaPEP",
     type: "website",
   },
