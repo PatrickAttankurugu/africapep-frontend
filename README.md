@@ -7,7 +7,7 @@
 
 The web frontend for [AfricaPEP](https://github.com/PatrickAttankurugu/AfricaPEP) — an open-source African Politically Exposed Persons database for KYC/AML compliance.
 
-**Live demo:** [africapep-frontend.vercel.app](https://africapep-frontend.vercel.app) | **Backend API:** [api-pep.102-37-18-200.sslip.io](https://api-pep.102-37-18-200.sslip.io/docs) | **Backend repo:** [AfricaPEP](https://github.com/PatrickAttankurugu/AfricaPEP)
+**Live demo:** [africapep-frontend.vercel.app](https://africapep-frontend.vercel.app) | **Backend API:** [api-pep.102-37-18-200.sslip.io](https://api-pep.102-37-18-200.sslip.io/health) | **Backend repo:** [AfricaPEP](https://github.com/PatrickAttankurugu/AfricaPEP)
 
 ## Features
 
@@ -80,7 +80,7 @@ lib/
 ## Related
 
 - **Backend API:** [github.com/PatrickAttankurugu/AfricaPEP](https://github.com/PatrickAttankurugu/AfricaPEP)
-- **API Docs:** [api-pep.102-37-18-200.sslip.io/docs](https://api-pep.102-37-18-200.sslip.io/docs)
+- **API Docs:** [AfricaPEP API guide](https://github.com/PatrickAttankurugu/AfricaPEP/blob/main/docs/API.md)
 
 ## Author
 
